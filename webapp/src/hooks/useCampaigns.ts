@@ -1,0 +1,52 @@
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { campaignService } from '../services/campaignService';
+import {type CampaignRequest, Status } from '../types';
+
+export const useCampaigns = (status?: Status) => {
+  return useQuery({
+    queryKey: ['campaigns', status],
+    queryFn: () => campaignService.getAll(status),
+  });
+};
+
+export const useCampaign = (id: number) => {
+  return useQuery({
+    queryKey: ['campaign', id],
+    queryFn: () => campaignService.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateCampaign = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CampaignRequest) => campaignService.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+    },
+  });
+};
+
+export const useUpdateCampaign = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: CampaignRequest }) =>
+      campaignService.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+    },
+  });
+};
+
+export const useDeleteCampaign = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => campaignService.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+    },
+  });
+};
