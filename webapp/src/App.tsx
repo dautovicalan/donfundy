@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from './contexts/AuthContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { HomePage } from './pages/HomePage';
@@ -9,6 +10,9 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { CampaignsPage } from './pages/CampaignsPage';
 import { CampaignDetailPage } from './pages/CampaignDetailPage';
+import { CreateCampaignPage } from './pages/CreateCampaignPage';
+import { EditCampaignPage } from './pages/EditCampaignPage';
+import { DonatePage } from './pages/DonatePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +27,11 @@ const queryClient = new QueryClient({
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route element={<Layout />}>
+      <LanguageProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
@@ -36,6 +41,33 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CampaignsPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/campaigns/new"
+                element={
+                  <ProtectedRoute>
+                    <CreateCampaignPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/campaigns/:id/edit"
+                element={
+                  <ProtectedRoute>
+                    <EditCampaignPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/campaigns/:id/donate"
+                element={
+                  <ProtectedRoute>
+                    <DonatePage />
                   </ProtectedRoute>
                 }
               />
@@ -52,6 +84,7 @@ function App() {
           </Routes>
         </AuthProvider>
       </BrowserRouter>
+      </LanguageProvider>
 
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

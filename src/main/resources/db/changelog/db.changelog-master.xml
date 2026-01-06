@@ -144,4 +144,21 @@
         </createIndex>
     </changeSet>
 
+    <changeSet id="7" author="alan">
+        <addColumn tableName="campaign">
+            <column name="created_by" type="bigint"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseTableName="campaign"
+                                 baseColumnNames="created_by"
+                                 constraintName="fk_campaign_created_by"
+                                 referencedTableName="donor"
+                                 referencedColumnNames="id"
+                                 onDelete="SET NULL"/>
+
+        <createIndex indexName="idx_campaign_created_by" tableName="campaign">
+            <column name="created_by"/>
+        </createIndex>
+    </changeSet>
+
 </databaseChangeLog>

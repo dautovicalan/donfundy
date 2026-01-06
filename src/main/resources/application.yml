@@ -13,6 +13,13 @@ jwt:
   expiration: 86400000
 
 spring:
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
   datasource:
     password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver

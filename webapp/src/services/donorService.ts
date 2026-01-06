@@ -7,6 +7,11 @@ export const donorService = {
     return response.data;
   },
 
+  getMe: async (): Promise<DonorResponse> => {
+    const response = await apiClient.get<DonorResponse>('/donors/me');
+    return response.data;
+  },
+
   getById: async (id: number): Promise<DonorResponse> => {
     const response = await apiClient.get<DonorResponse>(`/donors/${id}`);
     return response.data;

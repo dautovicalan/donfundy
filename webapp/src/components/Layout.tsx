@@ -1,5 +1,6 @@
 import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { LanguageToggle } from './LanguageToggle';
 
 export const Layout = () => {
   const { isAuthenticated, user, logout } = useAuth();
@@ -29,6 +30,8 @@ export const Layout = () => {
         </Link>
 
         <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <LanguageToggle />
+
           {isAuthenticated ? (
             <>
               <Link

@@ -1,14 +1,18 @@
 import { useParams, Link } from 'react-router-dom';
 import { useCampaign } from '../hooks/useCampaigns';
 import { useDonations } from '../hooks/useDonations';
+import { useAuth } from '../contexts/AuthContext';
 import { Status } from '../types';
 
 export const CampaignDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const campaignId = Number(id);
+  const { user } = useAuth();
 
   const { data: campaign, isLoading: campaignLoading, error: campaignError } = useCampaign(campaignId);
   const { data: donations, isLoading: donationsLoading } = useDonations(campaignId);
+
+  const isOwner = campaign?.createdByEmail && user?.email && campaign.createdByEmail === user.email;
 
   if (campaignLoading) {
     return <div style={{ padding: '20px' }}>Loading campaign...</div>;
@@ -24,7 +28,24 @@ export const CampaignDetailPage = () => {
         &larr; Back to Campaigns
       </Link>
 
-      <h1>{campaign.name}</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+        <h1 style={{ margin: 0 }}>{campaign.name}</h1>
+        {isOwner && (
+          <Link
+            to={`/campaigns/${campaign.id}/edit`}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '4px',
+              fontSize: '14px',
+            }}
+          >
+            Edit Campaign
+          </Link>
+        )}
+      </div>
 
       <div
         style={{

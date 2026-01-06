@@ -23,6 +23,11 @@ public class DonorController {
         return ResponseEntity.ok(donorService.findAll());
     }
 
+    @GetMapping("/me")
+    public ResponseEntity<DonorResponse> getCurrentUserDonor() {
+        return ResponseEntity.ok(donorService.findCurrentUserDonor());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<DonorResponse> getDonorById(@PathVariable Long id) {
         return ResponseEntity.ok(donorService.findById(id));

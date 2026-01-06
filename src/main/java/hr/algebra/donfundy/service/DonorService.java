@@ -5,13 +5,18 @@ import hr.algebra.donfundy.domain.User;
 import hr.algebra.donfundy.dto.DonorRequest;
 import hr.algebra.donfundy.dto.DonorResponse;
 import hr.algebra.donfundy.exception.ResourceNotFoundException;
+import hr.algebra.donfundy.exception.BusinessException;
 import hr.algebra.donfundy.repository.DonorRepository;
 import hr.algebra.donfundy.repository.UserRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,6 +44,19 @@ public class DonorService {
     public DonorResponse findByUserId(Long userId) {
         Donor donor = donorRepository.findByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("error.donor.not.found", new Object[]{userId}));
+        return mapToResponse(donor);
+    }
+
+    @Transactional(readOnly = true)
+    public DonorResponse findCurrentUserDonor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException("error.user.not.found"));
+
+        Donor donor = donorRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new BusinessException("error.donor.not.found.for.user"));
+
         return mapToResponse(donor);
     }
 
@@ -96,5 +114,17 @@ public class DonorService {
         response.setEmail(donor.getEmail());
         response.setPhoneNumber(donor.getPhoneNumber());
         return response;
+    }
+
+    public void createDonorForUser(@NonNull User savedUser) {
+        Optional<Donor> optionalDonor = donorRepository.findByUserId(savedUser.getId());
+        if (optionalDonor.isEmpty()){
+            Donor donor = new Donor();
+            donor.setFirstName(savedUser.getFirstName());
+            donor.setLastName(savedUser.getLastName());
+            donor.setEmail(savedUser.getEmail());
+            donor.setUser(savedUser);
+            donorRepository.save(donor);
+        }
     }
 }

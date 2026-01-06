@@ -5,6 +5,7 @@ import hr.algebra.donfundy.support.MessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,6 +24,16 @@ import java.util.Map;
 public class ExceptionAdvice {
 
     private final MessageService messageService;
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorResponse handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
+        log.error("Bad credentials: {}", ex.getMessage());
+        Locale locale = request.getLocale();
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(messageService.getLocalizedMessage("error.authentication.failed", locale));
+        return errorResponse;
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

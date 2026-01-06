@@ -29,6 +29,11 @@ public class CampaignController {
         return ResponseEntity.ok(campaignService.findAll());
     }
 
+    @GetMapping("/my-campaigns")
+    public ResponseEntity<List<CampaignResponse>> getMyCampaigns() {
+        return ResponseEntity.ok(campaignService.findByCurrentUser());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<CampaignResponse> getCampaignById(@PathVariable Long id) {
         return ResponseEntity.ok(campaignService.findById(id));

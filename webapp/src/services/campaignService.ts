@@ -8,6 +8,11 @@ export const campaignService = {
     return response.data;
   },
 
+  getMyCampaigns: async (): Promise<CampaignResponse[]> => {
+    const response = await apiClient.get<CampaignResponse[]>('/campaigns/my-campaigns');
+    return response.data;
+  },
+
   getById: async (id: number): Promise<CampaignResponse> => {
     const response = await apiClient.get<CampaignResponse>(`/campaigns/${id}`);
     return response.data;

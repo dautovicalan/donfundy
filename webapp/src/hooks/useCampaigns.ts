@@ -9,6 +9,13 @@ export const useCampaigns = (status?: Status) => {
   });
 };
 
+export const useMyCampaigns = () => {
+  return useQuery({
+    queryKey: ['my-campaigns'],
+    queryFn: () => campaignService.getMyCampaigns(),
+  });
+};
+
 export const useCampaign = (id: number) => {
   return useQuery({
     queryKey: ['campaign', id],

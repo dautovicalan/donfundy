@@ -55,6 +55,9 @@ export interface CampaignResponse {
   endDate?: string;
   status: Status;
   progressPercentage: number;
+  createdById?: number;
+  createdByName?: string;
+  createdByEmail?: string;
 }
 
 export interface DonorRequest {

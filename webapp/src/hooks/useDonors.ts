@@ -9,6 +9,13 @@ export const useDonors = () => {
   });
 };
 
+export const useCurrentDonor = () => {
+  return useQuery({
+    queryKey: ['donor', 'me'],
+    queryFn: () => donorService.getMe(),
+  });
+};
+
 export const useDonor = (id: number) => {
   return useQuery({
     queryKey: ['donor', id],

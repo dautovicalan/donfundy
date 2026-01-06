@@ -17,6 +17,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final DonorService donorService;
 
     @Transactional
     public void save(@Valid RegisterRequest registerRequest) {
@@ -35,6 +36,7 @@ public class UserService {
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
         user.setRole(Role.USER);
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        donorService.createDonorForUser(savedUser);
     }
 }

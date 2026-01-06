@@ -16,4 +16,7 @@ public class CampaignResponse {
     private LocalDate endDate;
     private Status status;
     private Double progressPercentage;
+    private Long createdById;
+    private String createdByName;
+    private String createdByEmail;
 }

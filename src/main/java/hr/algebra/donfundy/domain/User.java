@@ -8,7 +8,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "user")
+@Table(name = "\"user\"")
 public class User extends AbstractJpaEntity{
 
     @Column(name = "email", nullable = false, unique = true)

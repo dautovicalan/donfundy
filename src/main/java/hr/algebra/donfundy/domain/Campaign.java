@@ -36,4 +36,8 @@ public class Campaign extends AbstractJpaEntity {
     @Column(name = "status", nullable = false)
     private Status status;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by")
+    private Donor createdBy;
+
 }
