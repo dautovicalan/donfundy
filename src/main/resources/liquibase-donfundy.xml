@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+                   logicalFilePath="liquibase-donfundy.xml">
+
+    <changeSet id="1" author="alan">
+        <createTable tableName="user">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password_hash" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)"/>
+            <column name="last_name" type="varchar(255)"/>
+            <column name="updated" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="alan">
+        <createTable tableName="campaign">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="goal_amount" type="double precision">
+                <constraints nullable="false"/>
+            </column>
+            <column name="raised_amount" type="double precision"/>
+            <column name="start_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_date" type="date"/>
+            <column name="status" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="alan">
+        <createTable tableName="donor">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="bigint">
+                <constraints unique="true"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone_number" type="varchar(50)"/>
+            <column name="updated" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="alan">
+        <createTable tableName="donation">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="campaign_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="donor_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="decimal(10,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="donation_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="text"/>
+            <column name="payment_method" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated" type="timestamp"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="5" author="alan">
+        <addForeignKeyConstraint baseTableName="donor"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk_donor_user"
+                                 referencedTableName="user"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="donation"
+                                 baseColumnNames="campaign_id"
+                                 constraintName="fk_donation_campaign"
+                                 referencedTableName="campaign"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+
+        <addForeignKeyConstraint baseTableName="donation"
+                                 baseColumnNames="donor_id"
+                                 constraintName="fk_donation_donor"
+                                 referencedTableName="donor"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+
+    <changeSet id="6" author="alan">
+        <createIndex indexName="idx_user_email" tableName="user">
+            <column name="email"/>
+        </createIndex>
+
+        <createIndex indexName="idx_donor_user_id" tableName="donor">
+            <column name="user_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_campaign_status" tableName="campaign">
+            <column name="status"/>
+        </createIndex>
+
+        <createIndex indexName="idx_donation_campaign_id" tableName="donation">
+            <column name="campaign_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_donation_donor_id" tableName="donation">
+            <column name="donor_id"/>
+        </createIndex>
+
+        <createIndex indexName="idx_donation_date" tableName="donation">
+            <column name="donation_date"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
