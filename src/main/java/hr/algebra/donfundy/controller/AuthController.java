@@ -1,9 +1,8 @@
 package hr.algebra.donfundy.controller;
 
-import hr.algebra.donfundy.domain.User;
-import hr.algebra.donfundy.rest.LoginRequest;
-import hr.algebra.donfundy.rest.LoginResponse;
-import hr.algebra.donfundy.rest.RegisterRequest;
+import hr.algebra.donfundy.dto.LoginRequest;
+import hr.algebra.donfundy.dto.LoginResponse;
+import hr.algebra.donfundy.dto.RegisterRequest;
 import hr.algebra.donfundy.security.CustomUserDetailsService;
 import hr.algebra.donfundy.security.JwtUtil;
 import hr.algebra.donfundy.service.UserService;
@@ -13,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -1,4 +1,4 @@
-package hr.algebra.donfundy.rest;
+package hr.algebra.donfundy.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

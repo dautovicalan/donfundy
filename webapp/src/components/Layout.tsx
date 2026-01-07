@@ -1,9 +1,11 @@
 import { Link, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../i18n/useTranslation';
 import { LanguageToggle } from './LanguageToggle';
 
 export const Layout = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -15,6 +17,7 @@ export const Layout = () => {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
+          flexWrap: 'wrap',
         }}
       >
         <Link
@@ -29,7 +32,7 @@ export const Layout = () => {
           DonFundy
         </Link>
 
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center', flexWrap: 'wrap' }}>
           <LanguageToggle />
 
           {isAuthenticated ? (
@@ -41,7 +44,7 @@ export const Layout = () => {
                   textDecoration: 'none',
                 }}
               >
-                Campaigns
+                {t.nav.campaigns}
               </Link>
 
               <span style={{ color: '#ccc' }}>{user?.email}</span>
@@ -57,7 +60,7 @@ export const Layout = () => {
                   cursor: 'pointer',
                 }}
               >
-                Logout
+                {t.nav.logout}
               </button>
             </>
           ) : (
@@ -69,7 +72,7 @@ export const Layout = () => {
                   textDecoration: 'none',
                 }}
               >
-                Login
+                {t.nav.login}
               </Link>
 
               <Link
@@ -82,7 +85,7 @@ export const Layout = () => {
                   borderRadius: '4px',
                 }}
               >
-                Register
+                {t.nav.register}
               </Link>
             </>
           )}
@@ -102,7 +105,7 @@ export const Layout = () => {
           borderTop: '1px solid #ddd',
         }}
       >
-        <p>&copy; 2026 DonFundy. All rights reserved.</p>
+        <p>{t.footer.copyright}</p>
       </footer>
     </div>
   );

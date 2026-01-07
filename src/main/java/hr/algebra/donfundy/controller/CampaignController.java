@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,12 +41,14 @@ public class CampaignController {
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CampaignResponse> createCampaign(@Valid @RequestBody CampaignRequest request) {
         CampaignResponse created = campaignService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CampaignResponse> updateCampaign(
             @PathVariable Long id,
             @Valid @RequestBody CampaignRequest request
@@ -54,6 +57,7 @@ public class CampaignController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCampaign(@PathVariable Long id) {
         campaignService.delete(id);
         return ResponseEntity.noContent().build();

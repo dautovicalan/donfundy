@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -27,7 +29,7 @@ export const RegisterPage = () => {
     setError('');
 
     if (formData.password !== formData.repeatPassword) {
-      setError('Passwords do not match');
+      setError(t.validation.passwordsDoNotMatch);
       return;
     }
 
@@ -37,20 +39,20 @@ export const RegisterPage = () => {
       await register(formData);
       navigate('/campaigns');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err.response?.data?.message || t.errors.registrationFailed);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h1>Register for DonFundy</h1>
+    <div style={{ maxWidth: '400px', width: '100%', margin: '20px auto', padding: '20px' }}>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.auth.registerTitle}</h1>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="firstName" style={{ display: 'block', marginBottom: '5px' }}>
-            First Name:
+            {t.auth.firstName}:
           </label>
           <input
             type="text"
@@ -65,7 +67,7 @@ export const RegisterPage = () => {
 
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="lastName" style={{ display: 'block', marginBottom: '5px' }}>
-            Last Name:
+            {t.auth.lastName}:
           </label>
           <input
             type="text"
@@ -80,7 +82,7 @@ export const RegisterPage = () => {
 
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
-            Email:
+            {t.auth.email}:
           </label>
           <input
             type="email"
@@ -95,7 +97,7 @@ export const RegisterPage = () => {
 
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
-            Password:
+            {t.auth.password}:
           </label>
           <input
             type="password"
@@ -110,7 +112,7 @@ export const RegisterPage = () => {
 
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="repeatPassword" style={{ display: 'block', marginBottom: '5px' }}>
-            Repeat Password:
+            {t.auth.repeatPassword}:
           </label>
           <input
             type="password"
@@ -142,12 +144,12 @@ export const RegisterPage = () => {
             cursor: isLoading ? 'not-allowed' : 'pointer',
           }}
         >
-          {isLoading ? 'Registering...' : 'Register'}
+          {isLoading ? t.auth.registering : t.nav.register}
         </button>
       </form>
 
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        Already have an account? <Link to="/login">Login here</Link>
+        {t.auth.haveAccount} <Link to="/login">{t.auth.loginHere}</Link>
       </div>
     </div>
   );

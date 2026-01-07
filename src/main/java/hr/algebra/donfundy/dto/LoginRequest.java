@@ -1,4 +1,4 @@
-package hr.algebra.donfundy.rest;
+package hr.algebra.donfundy.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

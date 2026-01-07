@@ -8,6 +8,7 @@ interface AuthContextType {
   register: (data: RegisterRequest) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isLoading: boolean;
 }
 
@@ -70,6 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         register,
         logout,
         isAuthenticated: !!user,
+        isAdmin: user?.role === 'ADMIN',
         isLoading,
       }}
     >

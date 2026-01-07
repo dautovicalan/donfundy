@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useCreateCampaign } from '../hooks/useCampaigns';
+import { useTranslation } from '../i18n/useTranslation';
 import { Status } from '../types';
 
 export const CreateCampaignPage = () => {
   const navigate = useNavigate();
   const createCampaign = useCreateCampaign();
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -32,22 +34,22 @@ export const CreateCampaignPage = () => {
 
     // Validation
     if (!formData.name.trim()) {
-      setError('Campaign name is required');
+      setError(t.validation.campaignNameRequired);
       return;
     }
 
     if (!formData.goalAmount || Number(formData.goalAmount) <= 0) {
-      setError('Goal amount must be greater than 0');
+      setError(t.validation.goalAmountPositive);
       return;
     }
 
     if (!formData.startDate) {
-      setError('Start date is required');
+      setError(t.validation.startDateRequired);
       return;
     }
 
     if (formData.endDate && formData.endDate < formData.startDate) {
-      setError('End date must be after start date');
+      setError(t.validation.endDateAfterStart);
       return;
     }
 
@@ -64,22 +66,22 @@ export const CreateCampaignPage = () => {
       // Navigate to the created campaign
       navigate(`/campaigns/${result.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create campaign. Please try again.');
+      setError(err.response?.data?.message || t.errors.createCampaignFailed);
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '600px', width: '100%', margin: '0 auto' }}>
       <Link to="/campaigns" style={{ marginBottom: '20px', display: 'inline-block' }}>
-        &larr; Back to Campaigns
+        &larr; {t.campaigns.backToCampaigns}
       </Link>
 
-      <h1>Create New Campaign</h1>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.campaigns.createNewCampaign}</h1>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="name" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-            Campaign Name *
+            {t.campaigns.campaignName} *
           </label>
           <input
             type="text"
@@ -100,7 +102,7 @@ export const CreateCampaignPage = () => {
 
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="description" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-            Description
+            {t.campaigns.description}
           </label>
           <textarea
             id="description"
@@ -121,7 +123,7 @@ export const CreateCampaignPage = () => {
 
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="goalAmount" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-            Goal Amount ($) *
+            {t.campaigns.goalAmount} *
           </label>
           <input
             type="number"
@@ -142,10 +144,10 @@ export const CreateCampaignPage = () => {
           />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '20px' }}>
           <div>
             <label htmlFor="startDate" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Start Date *
+              {t.campaigns.startDate} *
             </label>
             <input
               type="date"
@@ -166,7 +168,7 @@ export const CreateCampaignPage = () => {
 
           <div>
             <label htmlFor="endDate" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              End Date
+              {t.campaigns.endDate}
             </label>
             <input
               type="date"
@@ -187,7 +189,7 @@ export const CreateCampaignPage = () => {
 
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="status" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-            Status *
+            {t.campaigns.status} *
           </label>
           <select
             id="status"
@@ -203,10 +205,10 @@ export const CreateCampaignPage = () => {
               borderRadius: '4px',
             }}
           >
-            <option value={Status.PENDING}>Pending</option>
-            <option value={Status.ACTIVE}>Active</option>
-            <option value={Status.COMPLETED}>Completed</option>
-            <option value={Status.CANCELLED}>Cancelled</option>
+            <option value={Status.PENDING}>{t.campaignStatus.PENDING}</option>
+            <option value={Status.ACTIVE}>{t.campaignStatus.ACTIVE}</option>
+            <option value={Status.COMPLETED}>{t.campaignStatus.COMPLETED}</option>
+            <option value={Status.CANCELLED}>{t.campaignStatus.CANCELLED}</option>
           </select>
         </div>
 
@@ -225,7 +227,7 @@ export const CreateCampaignPage = () => {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
             type="submit"
             disabled={createCampaign.isPending}
@@ -241,7 +243,7 @@ export const CreateCampaignPage = () => {
               cursor: createCampaign.isPending ? 'not-allowed' : 'pointer',
             }}
           >
-            {createCampaign.isPending ? 'Creating...' : 'Create Campaign'}
+            {createCampaign.isPending ? t.campaigns.creating : t.campaigns.createCampaign}
           </button>
 
           <button
@@ -257,7 +259,7 @@ export const CreateCampaignPage = () => {
               cursor: 'pointer',
             }}
           >
-            Cancel
+            {t.common.cancel}
           </button>
         </div>
       </form>

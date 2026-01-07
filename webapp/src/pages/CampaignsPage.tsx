@@ -1,37 +1,43 @@
 import { Link } from 'react-router-dom';
 import { useCampaigns } from '../hooks/useCampaigns';
+import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../i18n/useTranslation';
 import { Status } from '../types';
 
 export const CampaignsPage = () => {
   const { data: campaigns, isLoading, error } = useCampaigns();
+  const { isAdmin } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
-    return <div style={{ padding: '20px' }}>Loading campaigns...</div>;
+    return <div style={{ padding: '20px' }}>{t.common.loading}</div>;
   }
 
   if (error) {
-    return <div style={{ padding: '20px', color: 'red' }}>Error loading campaigns</div>;
+    return <div style={{ padding: '20px', color: 'red' }}>{t.errors.loadingCampaigns}</div>;
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h1>Campaigns</h1>
-        <Link
-          to="/campaigns/new"
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            textDecoration: 'none',
-            borderRadius: '4px',
-          }}
-        >
-          Create Campaign
-        </Link>
+    <div style={{ padding: '20px', maxWidth: '100%' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+        <h1 style={{ margin: 0 }}>{t.campaigns.title}</h1>
+        {isAdmin && (
+          <Link
+            to="/campaigns/new"
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#007bff',
+              color: 'white',
+              textDecoration: 'none',
+              borderRadius: '4px',
+            }}
+          >
+            {t.campaigns.createCampaign}
+          </Link>
+        )}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
         {campaigns?.map((campaign) => (
           <div
             key={campaign.id}
@@ -46,11 +52,11 @@ export const CampaignsPage = () => {
             <p style={{ color: '#666', marginBottom: '10px' }}>{campaign.description}</p>
 
             <div style={{ marginBottom: '10px' }}>
-              <strong>Goal:</strong> ${campaign.goalAmount.toFixed(2)}
+              <strong>{t.campaigns.goal}:</strong> ${campaign.goalAmount.toFixed(2)}
             </div>
 
             <div style={{ marginBottom: '10px' }}>
-              <strong>Raised:</strong> ${campaign.raisedAmount.toFixed(2)}
+              <strong>{t.campaigns.raised}:</strong> ${campaign.raisedAmount.toFixed(2)}
             </div>
 
             <div style={{ marginBottom: '10px' }}>
@@ -64,7 +70,7 @@ export const CampaignsPage = () => {
                   }}
                 />
               </div>
-              <small>{campaign.progressPercentage.toFixed(1)}% funded</small>
+              <small>{campaign.progressPercentage.toFixed(1)}% {t.campaigns.funded}</small>
             </div>
 
             <div style={{ marginBottom: '10px' }}>
@@ -81,7 +87,7 @@ export const CampaignsPage = () => {
                       : '#f8d7da',
                 }}
               >
-                {campaign.status}
+                {t.campaignStatus[campaign.status]}
               </span>
             </div>
 
@@ -97,7 +103,7 @@ export const CampaignsPage = () => {
                 borderRadius: '4px',
               }}
             >
-              View Details
+              {t.campaigns.viewDetails}
             </Link>
           </div>
         ))}
@@ -105,7 +111,7 @@ export const CampaignsPage = () => {
 
       {campaigns?.length === 0 && (
         <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-          No campaigns found. Create your first campaign!
+          {t.campaigns.noCampaigns}
         </div>
       )}
     </div>

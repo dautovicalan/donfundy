@@ -3,12 +3,14 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useCampaign } from '../hooks/useCampaigns';
 import { useCurrentDonor } from '../hooks/useDonors';
 import { useCreateDonation } from '../hooks/useDonations';
+import { useTranslation } from '../i18n/useTranslation';
 import { PaymentMethod, Status } from '../types';
 
 export const DonatePage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const campaignId = Number(id);
+  const { t } = useTranslation();
 
   const { data: campaign, isLoading: campaignLoading } = useCampaign(campaignId);
   const { data: donor, isLoading: donorLoading } = useCurrentDonor();
@@ -37,12 +39,12 @@ export const DonatePage = () => {
     setSuccess(false);
 
     if (!donor) {
-      setError('You must have a donor profile to make donations');
+      setError(t.validation.noDonorProfile);
       return;
     }
 
     if (!formData.amount || Number(formData.amount) <= 0) {
-      setError('Donation amount must be greater than 0');
+      setError(t.validation.amountRequired);
       return;
     }
 
@@ -66,23 +68,23 @@ export const DonatePage = () => {
         navigate(`/campaigns/${campaignId}`);
       }, 2000);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to process donation. Please try again.');
+      setError(err.response?.data?.message || t.errors.donationFailed);
     }
   };
 
   if (campaignLoading || donorLoading) {
-    return <div style={{ padding: '20px' }}>Loading...</div>;
+    return <div style={{ padding: '20px' }}>{t.common.loading}</div>;
   }
 
   if (!campaign) {
-    return <div style={{ padding: '20px', color: 'red' }}>Campaign not found</div>;
+    return <div style={{ padding: '20px', color: 'red' }}>{t.errors.campaignNotFound}</div>;
   }
 
   if (campaign.status !== Status.ACTIVE) {
     return (
       <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
         <Link to={`/campaigns/${campaignId}`} style={{ marginBottom: '20px', display: 'inline-block' }}>
-          &larr; Back to Campaign
+          &larr; {t.campaigns.backToCampaign}
         </Link>
         <div
           style={{
@@ -94,19 +96,19 @@ export const DonatePage = () => {
             textAlign: 'center',
           }}
         >
-          This campaign is not accepting donations at this time.
+          {t.donations.notAccepting}
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '600px', width: '100%', margin: '0 auto' }}>
       <Link to={`/campaigns/${campaignId}`} style={{ marginBottom: '20px', display: 'inline-block' }}>
-        &larr; Back to Campaign
+        &larr; {t.campaigns.backToCampaign}
       </Link>
 
-      <h1>Make a Donation</h1>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.donations.makeADonation}</h1>
 
       <div
         style={{
@@ -120,15 +122,15 @@ export const DonatePage = () => {
         <p style={{ marginBottom: '10px' }}>{campaign.description}</p>
 
         <div style={{ marginTop: '15px' }}>
-          <strong>Goal:</strong> ${campaign.goalAmount.toFixed(2)}
+          <strong>{t.campaigns.goal}:</strong> ${campaign.goalAmount.toFixed(2)}
         </div>
         <div>
-          <strong>Raised:</strong> ${campaign.raisedAmount.toFixed(2)} ({campaign.progressPercentage.toFixed(1)}%)
+          <strong>{t.campaigns.raised}:</strong> ${campaign.raisedAmount.toFixed(2)} ({campaign.progressPercentage.toFixed(1)}%)
         </div>
 
         {campaign.goalAmount > campaign.raisedAmount && (
           <div style={{ marginTop: '10px', color: '#666' }}>
-            <strong>Remaining:</strong> ${(campaign.goalAmount - campaign.raisedAmount).toFixed(2)}
+            <strong>{t.campaigns.remaining}:</strong> ${(campaign.goalAmount - campaign.raisedAmount).toFixed(2)}
           </div>
         )}
       </div>
@@ -145,15 +147,15 @@ export const DonatePage = () => {
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ marginTop: 0 }}>Thank you for your donation!</h3>
-          <p>Your contribution has been successfully processed.</p>
-          <p>Redirecting to campaign page...</p>
+          <h3 style={{ marginTop: 0 }}>{t.donations.thankYou}</h3>
+          <p>{t.donations.successMessage}</p>
+          <p>{t.donations.redirecting}</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '20px' }}>
             <label htmlFor="amount" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Donation Amount ($) *
+              {t.donations.amount} *
             </label>
             <input
               type="number"
@@ -171,13 +173,13 @@ export const DonatePage = () => {
                 border: '1px solid #ddd',
                 borderRadius: '4px',
               }}
-              placeholder="Enter amount"
+              placeholder={t.donations.enterAmount}
             />
           </div>
 
           <div style={{ marginBottom: '20px' }}>
             <label htmlFor="paymentMethod" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Payment Method *
+              {t.donations.paymentMethod} *
             </label>
             <select
               id="paymentMethod"
@@ -193,15 +195,15 @@ export const DonatePage = () => {
                 borderRadius: '4px',
               }}
             >
-              <option value={PaymentMethod.CARD}>Credit/Debit Card</option>
-              <option value={PaymentMethod.BANK_TRANSFER}>Bank Transfer</option>
-              <option value={PaymentMethod.PAYPAL}>PayPal</option>
+              <option value={PaymentMethod.CARD}>{t.paymentMethods.CARD}</option>
+              <option value={PaymentMethod.BANK_TRANSFER}>{t.paymentMethods.BANK_TRANSFER}</option>
+              <option value={PaymentMethod.PAYPAL}>{t.paymentMethods.PAYPAL}</option>
             </select>
           </div>
 
           <div style={{ marginBottom: '20px' }}>
             <label htmlFor="message" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-              Message (Optional)
+              {t.donations.message}
             </label>
             <textarea
               id="message"
@@ -217,7 +219,7 @@ export const DonatePage = () => {
                 borderRadius: '4px',
                 fontFamily: 'inherit',
               }}
-              placeholder="Add a message to your donation (optional)"
+              placeholder={t.donations.addMessage}
             />
           </div>
 
@@ -230,7 +232,7 @@ export const DonatePage = () => {
                 marginBottom: '20px',
               }}
             >
-              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>Donating as:</div>
+              <div style={{ fontSize: '14px', color: '#666', marginBottom: '5px' }}>{t.donations.donatingAs}</div>
               <div style={{ fontWeight: 'bold' }}>
                 {donor.firstName} {donor.lastName}
               </div>
@@ -253,7 +255,7 @@ export const DonatePage = () => {
             </div>
           )}
 
-          <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button
               type="submit"
               disabled={createDonation.isPending}
@@ -269,7 +271,7 @@ export const DonatePage = () => {
                 cursor: createDonation.isPending ? 'not-allowed' : 'pointer',
               }}
             >
-              {createDonation.isPending ? 'Processing...' : 'Donate Now'}
+              {createDonation.isPending ? t.donations.processing : t.donations.donateNow}
             </button>
 
             <button
@@ -285,7 +287,7 @@ export const DonatePage = () => {
                 cursor: 'pointer',
               }}
             >
-              Cancel
+              {t.common.cancel}
             </button>
           </div>
         </form>

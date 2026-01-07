@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 export const LoginPage = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,20 +21,20 @@ export const LoginPage = () => {
       await login({ email, password });
       navigate('/campaigns');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.response?.data?.message || t.errors.loginFailed);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '50px auto', padding: '20px' }}>
-      <h1>Login to DonFundy</h1>
+    <div style={{ maxWidth: '400px', width: '100%', margin: '20px auto', padding: '20px' }}>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.auth.loginTitle}</h1>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="email" style={{ display: 'block', marginBottom: '5px' }}>
-            Email:
+            {t.auth.email}:
           </label>
           <input
             type="email"
@@ -46,7 +48,7 @@ export const LoginPage = () => {
 
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="password" style={{ display: 'block', marginBottom: '5px' }}>
-            Password:
+            {t.auth.password}:
           </label>
           <input
             type="password"
@@ -77,12 +79,12 @@ export const LoginPage = () => {
             cursor: isLoading ? 'not-allowed' : 'pointer',
           }}
         >
-          {isLoading ? 'Logging in...' : 'Login'}
+          {isLoading ? t.auth.loggingIn : t.nav.login}
         </button>
       </form>
 
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        Don't have an account? <Link to="/register">Register here</Link>
+        {t.auth.noAccount} <Link to="/register">{t.auth.registerHere}</Link>
       </div>
     </div>
   );

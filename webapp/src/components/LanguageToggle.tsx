@@ -1,7 +1,9 @@
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTranslation } from '../i18n/useTranslation';
 
 export const LanguageToggle = () => {
   const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as 'en-US' | 'es-ES');
@@ -10,7 +12,7 @@ export const LanguageToggle = () => {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
       <label htmlFor="language-select" style={{ fontSize: '14px', fontWeight: '500', color: 'white' }}>
-        Language:
+        {t.nav.language}:
       </label>
       <select
         id="language-select"

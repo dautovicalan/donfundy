@@ -1,0 +1,164 @@
+/* Global responsive styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive container */
+.container {
+  width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 750px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    max-width: 970px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1170px;
+  }
+}
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  nav {
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 10px !important;
+  }
+
+  nav > div {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100%;
+  }
+
+  nav a,
+  nav button {
+    width: 100%;
+    text-align: center !important;
+  }
+}
+
+/* Responsive Forms */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+  }
+
+  form > div {
+    margin-bottom: 15px !important;
+  }
+}
+
+/* Campaign Grid */
+@media (max-width: 768px) {
+  [style*="gridTemplateColumns"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Buttons */
+@media (max-width: 768px) {
+  button,
+  a[style*="padding"] {
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Modal */
+@media (max-width: 768px) {
+  [style*="position: fixed"] > div {
+    width: 95% !important;
+    max-width: 95% !important;
+    padding: 20px !important;
+  }
+}
+
+/* Tables and content */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 28px !important;
+  }
+
+  h2 {
+    font-size: 24px !important;
+  }
+
+  h3 {
+    font-size: 20px !important;
+  }
+
+  p {
+    font-size: 14px !important;
+  }
+}
+
+/* Flex layouts on mobile */
+@media (max-width: 768px) {
+  [style*="display: flex"] {
+    flex-wrap: wrap !important;
+  }
+
+  [style*="display: flex"][style*="gap"] {
+    gap: 10px !important;
+  }
+}
+
+/* Home page features */
+@media (max-width: 768px) {
+  .home-features {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+/* Campaign detail */
+@media (max-width: 768px) {
+  .campaign-actions {
+    flex-direction: column !important;
+  }
+
+  .campaign-actions > * {
+    width: 100% !important;
+  }
+}
+
+/* Donation cards */
+@media (max-width: 768px) {
+  .donation-card {
+    padding: 12px !important;
+  }
+}
+
+/* Touch-friendly spacing */
+@media (max-width: 768px) {
+  a,
+  button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
