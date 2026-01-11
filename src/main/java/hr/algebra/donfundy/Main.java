@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class Main {
 
-    // TODO: https://medium.com/@AlexanderObregon/how-to-implement-internationalization-i18n-in-spring-boot-aea2c62c1bfa
-
     public static void main(String[] args) {
         SpringApplication.run(Main.class, args);
     }
