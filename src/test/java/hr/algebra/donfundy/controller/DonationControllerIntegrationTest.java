@@ -13,27 +13,25 @@ import hr.algebra.donfundy.repository.DonorRepository;
 import hr.algebra.donfundy.repository.UserRepository;
 import hr.algebra.donfundy.security.CustomUserDetailsService;
 import hr.algebra.donfundy.security.JwtUtil;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @DisplayName("DonationController Integration Tests")
 @TestPropertySource(properties = {
@@ -44,15 +42,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 class DonationControllerIntegrationTest {
 
-    @Autowired private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
 
-    @Autowired private DonationRepository donationRepository;
-    @Autowired private CampaignRepository campaignRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private DonorRepository donorRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private DonationRepository donationRepository;
+    @Autowired
+    private CampaignRepository campaignRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DonorRepository donorRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     private String adminToken;
     private String userToken;
@@ -65,6 +71,9 @@ class DonationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
+
         donationRepository.deleteAll();
         campaignRepository.deleteAll();
         donorRepository.deleteAll();
@@ -122,67 +131,84 @@ class DonationControllerIntegrationTest {
 
     @Test
     @DisplayName("Should get all donations with authentication")
-    void shouldGetAllDonationsWithAuthentication() throws Exception {
-        mockMvc.perform(get("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                // if your API returns amount as number 100.00, jsonPath usually sees it as 100.0
-                .andExpect(jsonPath("$[0].amount").value(100.0));
+    void shouldGetAllDonationsWithAuthentication() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(greaterThanOrEqualTo(1)))
+            .body("[0].amount", equalTo(100.0f));
     }
 
     @Test
     @DisplayName("Should return 401 when getting donations without authentication")
-    void shouldReturn401WhenGettingDonationsWithoutAuthentication() throws Exception {
-        mockMvc.perform(get("/donations"))
-                .andExpect(status().isUnauthorized());
+    void shouldReturn401WhenGettingDonationsWithoutAuthentication() {
+        given()
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(401);
     }
 
     @Test
     @DisplayName("Should get donations by campaign ID")
-    void shouldGetDonationsByCampaignId() throws Exception {
-        mockMvc.perform(get("/donations")
-                        .param("campaignId", String.valueOf(testCampaign.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].campaignId").value(testCampaign.getId()));
+    void shouldGetDonationsByCampaignId() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .queryParam("campaignId", testCampaign.getId())
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(greaterThanOrEqualTo(1)))
+            .body("[0].campaignId", equalTo(testCampaign.getId().intValue()));
     }
 
     @Test
     @DisplayName("Should get donations by donor ID")
-    void shouldGetDonationsByDonorId() throws Exception {
-        mockMvc.perform(get("/donations")
-                        .param("donorId", String.valueOf(regularDonor.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].donorId").value(regularDonor.getId()));
+    void shouldGetDonationsByDonorId() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .queryParam("donorId", regularDonor.getId())
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(greaterThanOrEqualTo(1)))
+            .body("[0].donorId", equalTo(regularDonor.getId().intValue()));
     }
 
     @Test
     @DisplayName("Should get donation by ID")
-    void shouldGetDonationById() throws Exception {
-        mockMvc.perform(get("/donations/{id}", testDonation.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testDonation.getId()))
-                .andExpect(jsonPath("$.amount").value(100.0))
-                .andExpect(jsonPath("$.paymentMethod").value("CARD"))
-                .andExpect(jsonPath("$.message").value("Test donation"));
+    void shouldGetDonationById() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/donations/{id}", testDonation.getId())
+        .then()
+            .statusCode(200)
+            .body("id", equalTo(testDonation.getId().intValue()))
+            .body("amount", equalTo(100.0f))
+            .body("paymentMethod", equalTo("CARD"))
+            .body("message", equalTo("Test donation"));
     }
 
     @Test
     @DisplayName("Should return 404 when donation not found")
-    void shouldReturn404WhenDonationNotFound() throws Exception {
-        mockMvc.perform(get("/donations/{id}", 999999L)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isNotFound());
+    void shouldReturn404WhenDonationNotFound() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/donations/{id}", 999999L)
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Should create donation successfully")
-    void shouldCreateDonationSuccessfully() throws Exception {
+    void shouldCreateDonationSuccessfully() {
         String body = String.format("""
             {
               "campaignId": %d,
@@ -193,19 +219,22 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId(), adminDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.amount").value(50.0))
-                .andExpect(jsonPath("$.paymentMethod").value("BANK_TRANSFER"))
-                .andExpect(jsonPath("$.message").value("Another donation"));
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(201)
+            .body("amount", equalTo(50.0f))
+            .body("paymentMethod", equalTo("BANK_TRANSFER"))
+            .body("message", equalTo("Another donation"));
     }
 
     @Test
     @DisplayName("Should return 401 when creating donation without authentication")
-    void shouldReturn401WhenCreatingDonationWithoutAuthentication() throws Exception {
+    void shouldReturn401WhenCreatingDonationWithoutAuthentication() {
         String body = String.format("""
             {
               "campaignId": %d,
@@ -215,15 +244,18 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId(), regularDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isUnauthorized());
+        given()
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(401);
     }
 
     @Test
     @DisplayName("Should return 404 when creating donation with non-existent campaign")
-    void shouldReturn404WhenCreatingDonationWithNonExistentCampaign() throws Exception {
+    void shouldReturn404WhenCreatingDonationWithNonExistentCampaign() {
         String body = String.format("""
             {
               "campaignId": 999999,
@@ -233,16 +265,19 @@ class DonationControllerIntegrationTest {
             }
             """, regularDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isNotFound());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Should return 404 when creating donation with non-existent donor")
-    void shouldReturn404WhenCreatingDonationWithNonExistentDonor() throws Exception {
+    void shouldReturn404WhenCreatingDonationWithNonExistentDonor() {
         String body = String.format("""
             {
               "campaignId": %d,
@@ -252,16 +287,19 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isNotFound());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Should return 400 when creating donation for inactive campaign")
-    void shouldReturn400WhenCreatingDonationForInactiveCampaign() throws Exception {
+    void shouldReturn400WhenCreatingDonationForInactiveCampaign() {
         testCampaign.setStatus(Status.COMPLETED);
         campaignRepository.save(testCampaign);
 
@@ -274,16 +312,19 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId(), regularDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isBadRequest());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(400);
     }
 
     @Test
     @DisplayName("Should return 400 when creating donation with zero amount")
-    void shouldReturn400WhenCreatingDonationWithZeroAmount() throws Exception {
+    void shouldReturn400WhenCreatingDonationWithZeroAmount() {
         String body = String.format("""
             {
               "campaignId": %d,
@@ -293,16 +334,19 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId(), regularDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isBadRequest());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(400);
     }
 
     @Test
     @DisplayName("Should return 400 when creating donation with negative amount")
-    void shouldReturn400WhenCreatingDonationWithNegativeAmount() throws Exception {
+    void shouldReturn400WhenCreatingDonationWithNegativeAmount() {
         String body = String.format("""
             {
               "campaignId": %d,
@@ -312,45 +356,61 @@ class DonationControllerIntegrationTest {
             }
             """, testCampaign.getId(), regularDonor.getId());
 
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isBadRequest());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(400);
     }
 
     @Test
     @DisplayName("Should validate donation request fields")
-    void shouldValidateDonationRequestFields() throws Exception {
-        mockMvc.perform(post("/donations")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest());
+    void shouldValidateDonationRequestFields() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body("{}")
+        .when()
+            .post("/donations")
+        .then()
+            .statusCode(400);
     }
 
     @Test
     @DisplayName("Should delete donation successfully")
-    void shouldDeleteDonationSuccessfully() throws Exception {
-        mockMvc.perform(delete("/donations/{id}", testDonation.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isNoContent());
+    void shouldDeleteDonationSuccessfully() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .delete("/donations/{id}", testDonation.getId())
+        .then()
+            .statusCode(204);
 
-        mockMvc.perform(get("/donations/{id}", testDonation.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isNotFound());
+        // Verify deletion
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/donations/{id}", testDonation.getId())
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Should return 401 when deleting donation without authentication")
-    void shouldReturn401WhenDeletingDonationWithoutAuthentication() throws Exception {
-        mockMvc.perform(delete("/donations/{id}", testDonation.getId()))
-                .andExpect(status().isUnauthorized());
+    void shouldReturn401WhenDeletingDonationWithoutAuthentication() {
+        given()
+        .when()
+            .delete("/donations/{id}", testDonation.getId())
+        .then()
+            .statusCode(401);
     }
 
     @Test
     @DisplayName("Should return empty list when no donations found for campaign")
-    void shouldReturnEmptyListWhenNoDonationsFoundForCampaign() throws Exception {
+    void shouldReturnEmptyListWhenNoDonationsFoundForCampaign() {
         Campaign newCampaign = new Campaign();
         newCampaign.setName("New Campaign");
         newCampaign.setDescription("No donations");
@@ -362,17 +422,19 @@ class DonationControllerIntegrationTest {
         newCampaign.setCreatedBy(adminDonor);
         newCampaign = campaignRepository.save(newCampaign);
 
-        mockMvc.perform(get("/donations")
-                        .param("campaignId", String.valueOf(newCampaign.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .queryParam("campaignId", newCampaign.getId())
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(0));
     }
 
     @Test
     @DisplayName("Should return empty list when no donations found for donor")
-    void shouldReturnEmptyListWhenNoDonationsFoundForDonor() throws Exception {
+    void shouldReturnEmptyListWhenNoDonationsFoundForDonor() {
         User newUser = new User();
         newUser.setEmail("newuser@example.com");
         newUser.setPasswordHash(passwordEncoder.encode("password"));
@@ -386,11 +448,13 @@ class DonationControllerIntegrationTest {
         newDonor.setEmail("newuser@example.com");
         newDonor = donorRepository.save(newDonor);
 
-        mockMvc.perform(get("/donations")
-                        .param("donorId", String.valueOf(newDonor.getId()))
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .queryParam("donorId", newDonor.getId())
+        .when()
+            .get("/donations")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(0));
     }
 }

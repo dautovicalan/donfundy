@@ -194,7 +194,6 @@ class BulkDonationServiceTest {
         );
 
         when(campaignRepository.findById(999L)).thenReturn(Optional.empty());
-        when(donorRepository.findByEmail("anonymous@donfundy.com")).thenReturn(Optional.of(anonymousDonor));
 
         // When
         BulkDonationResult result = bulkDonationService.processBulkDonations(file);
@@ -224,7 +223,6 @@ class BulkDonationServiceTest {
         );
 
         when(campaignRepository.findById(1L)).thenReturn(Optional.of(testCampaign));
-        when(donorRepository.findByEmail("anonymous@donfundy.com")).thenReturn(Optional.of(anonymousDonor));
 
         // When
         BulkDonationResult result = bulkDonationService.processBulkDonations(file);
@@ -253,7 +251,6 @@ class BulkDonationServiceTest {
         );
 
         when(campaignRepository.findById(1L)).thenReturn(Optional.of(testCampaign));
-        when(donorRepository.findByEmail("anonymous@donfundy.com")).thenReturn(Optional.of(anonymousDonor));
 
         // When
         BulkDonationResult result = bulkDonationService.processBulkDonations(file);
@@ -360,7 +357,6 @@ class BulkDonationServiceTest {
         );
 
         when(campaignRepository.findById(1L)).thenReturn(Optional.of(testCampaign));
-        when(donorRepository.findByEmail("anonymous@donfundy.com")).thenReturn(Optional.of(anonymousDonor));
 
         // When
         BulkDonationResult result = bulkDonationService.processBulkDonations(file);

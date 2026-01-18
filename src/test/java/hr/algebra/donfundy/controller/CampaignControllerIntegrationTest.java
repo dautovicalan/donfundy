@@ -10,26 +10,24 @@ import hr.algebra.donfundy.repository.DonorRepository;
 import hr.algebra.donfundy.repository.UserRepository;
 import hr.algebra.donfundy.security.CustomUserDetailsService;
 import hr.algebra.donfundy.security.JwtUtil;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Transactional
 @DisplayName("CampaignController Integration Tests")
 @TestPropertySource(properties = {
@@ -40,14 +38,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 })
 class CampaignControllerIntegrationTest {
 
-    @Autowired private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
 
-    @Autowired private CampaignRepository campaignRepository;
-    @Autowired private UserRepository userRepository;
-    @Autowired private DonorRepository donorRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private JwtUtil jwtUtil;
-    @Autowired private CustomUserDetailsService userDetailsService;
+    @Autowired
+    private CampaignRepository campaignRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private DonorRepository donorRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtUtil jwtUtil;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     private String adminToken;
     private String userToken;
@@ -59,6 +64,9 @@ class CampaignControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
+        RestAssured.port = port;
+        RestAssured.basePath = "/api/v1";
+
         campaignRepository.deleteAll();
         donorRepository.deleteAll();
         userRepository.deleteAll();
@@ -106,43 +114,55 @@ class CampaignControllerIntegrationTest {
 
     @Test
     @DisplayName("Should get all campaigns with authentication")
-    void shouldGetAllCampaignsWithAuthentication() throws Exception {
-        mockMvc.perform(get("/campaigns")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].name").value("Test Campaign"));
+    void shouldGetAllCampaignsWithAuthentication() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/campaigns")
+        .then()
+            .statusCode(200)
+            .body("$", hasSize(greaterThanOrEqualTo(1)))
+            .body("[0].name", equalTo("Test Campaign"));
     }
 
     @Test
     @DisplayName("Should return 401 when getting campaigns without authentication")
-    void shouldReturn401WhenGettingCampaignsWithoutAuthentication() throws Exception {
-        mockMvc.perform(get("/campaigns"))
-                .andExpect(status().isUnauthorized());
+    void shouldReturn401WhenGettingCampaignsWithoutAuthentication() {
+        given()
+        .when()
+            .get("/campaigns")
+        .then()
+            .statusCode(401);
     }
 
     @Test
     @DisplayName("Should get campaign by ID")
-    void shouldGetCampaignById() throws Exception {
-        mockMvc.perform(get("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(testCampaign.getId()))
-                .andExpect(jsonPath("$.name").value("Test Campaign"))
-                .andExpect(jsonPath("$.goalAmount").value(1000.0));
+    void shouldGetCampaignById() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(200)
+            .body("id", equalTo(testCampaign.getId().intValue()))
+            .body("name", equalTo("Test Campaign"))
+            .body("goalAmount", equalTo(1000.0f));
     }
 
     @Test
     @DisplayName("Should return 404 when campaign not found")
-    void shouldReturn404WhenCampaignNotFound() throws Exception {
-        mockMvc.perform(get("/campaigns/{id}", 999999L)
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isNotFound());
+    void shouldReturn404WhenCampaignNotFound() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .get("/campaigns/{id}", 999999L)
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Admin should create campaign successfully")
-    void adminShouldCreateCampaignSuccessfully() throws Exception {
+    void adminShouldCreateCampaignSuccessfully() {
         String body = String.format("""
             {
               "name": "New Campaign",
@@ -154,18 +174,21 @@ class CampaignControllerIntegrationTest {
             }
             """, LocalDate.now(), LocalDate.now().plusDays(60));
 
-        mockMvc.perform(post("/campaigns")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("New Campaign"))
-                .andExpect(jsonPath("$.goalAmount").value(2000.0));
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/campaigns")
+        .then()
+            .statusCode(201)
+            .body("name", equalTo("New Campaign"))
+            .body("goalAmount", equalTo(2000.0f));
     }
 
     @Test
     @DisplayName("Regular user should not be able to create campaign")
-    void regularUserShouldNotCreateCampaign() throws Exception {
+    void regularUserShouldNotCreateCampaign() {
         String body = String.format("""
             {
               "name": "New Campaign",
@@ -176,16 +199,19 @@ class CampaignControllerIntegrationTest {
             }
             """, LocalDate.now(), LocalDate.now().plusDays(60));
 
-        mockMvc.perform(post("/campaigns")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isForbidden());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .post("/campaigns")
+        .then()
+            .statusCode(403);
     }
 
     @Test
     @DisplayName("Admin should update campaign successfully")
-    void adminShouldUpdateCampaignSuccessfully() throws Exception {
+    void adminShouldUpdateCampaignSuccessfully() {
         String body = String.format("""
             {
               "name": "Updated Campaign",
@@ -196,18 +222,21 @@ class CampaignControllerIntegrationTest {
             }
             """, testCampaign.getStartDate(), testCampaign.getEndDate());
 
-        mockMvc.perform(put("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Updated Campaign"))
-                .andExpect(jsonPath("$.goalAmount").value(1500.0));
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .put("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(200)
+            .body("name", equalTo("Updated Campaign"))
+            .body("goalAmount", equalTo(1500.0f));
     }
 
     @Test
     @DisplayName("Regular user should not be able to update campaign")
-    void regularUserShouldNotUpdateCampaign() throws Exception {
+    void regularUserShouldNotUpdateCampaign() {
         String body = String.format("""
             {
               "name": "Updated Campaign",
@@ -218,40 +247,56 @@ class CampaignControllerIntegrationTest {
             }
             """, testCampaign.getStartDate(), testCampaign.getEndDate());
 
-        mockMvc.perform(put("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(body))
-                .andExpect(status().isForbidden());
+        given()
+            .header("Authorization", "Bearer " + userToken)
+            .contentType(ContentType.JSON)
+            .body(body)
+        .when()
+            .put("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(403);
     }
 
     @Test
     @DisplayName("Admin should delete campaign successfully")
-    void adminShouldDeleteCampaignSuccessfully() throws Exception {
-        mockMvc.perform(delete("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken))
-                .andExpect(status().isNoContent());
+    void adminShouldDeleteCampaignSuccessfully() {
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+        .when()
+            .delete("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(204);
 
-        mockMvc.perform(get("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken))
-                .andExpect(status().isNotFound());
+        // Verify deletion
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+        .when()
+            .get("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(404);
     }
 
     @Test
     @DisplayName("Regular user should not be able to delete campaign")
-    void regularUserShouldNotDeleteCampaign() throws Exception {
-        mockMvc.perform(delete("/campaigns/{id}", testCampaign.getId())
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + userToken))
-                .andExpect(status().isForbidden());
+    void regularUserShouldNotDeleteCampaign() {
+        given()
+            .header("Authorization", "Bearer " + userToken)
+        .when()
+            .delete("/campaigns/{id}", testCampaign.getId())
+        .then()
+            .statusCode(403);
     }
 
     @Test
     @DisplayName("Should validate campaign request fields")
-    void shouldValidateCampaignRequestFields() throws Exception {
-        mockMvc.perform(post("/campaigns")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + adminToken)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{}"))
-                .andExpect(status().isBadRequest());
+    void shouldValidateCampaignRequestFields() {
+        given()
+            .header("Authorization", "Bearer " + adminToken)
+            .contentType(ContentType.JSON)
+            .body("{}")
+        .when()
+            .post("/campaigns")
+        .then()
+            .statusCode(400);
     }
 }
