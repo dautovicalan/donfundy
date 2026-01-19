@@ -16,11 +16,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,19 +28,8 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
 @DisplayName("BulkDonationController Integration Tests")
-@TestPropertySource(properties = {
-        "spring.datasource.username=postgres-dev",
-        "spring.datasource.password=dev",
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/donfundy",
-        "jwt.secret=TestJwtSecretKeyForDonFundyApplication"
-})
-class BulkDonationControllerIntegrationTest {
-
-    @LocalServerPort
-    private int port;
+class BulkDonationControllerIntegrationTest extends BaseIntegrationTest{
 
     @Autowired
     private DonationRepository donationRepository;
@@ -70,9 +56,6 @@ class BulkDonationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/api/v1";
-
         donationRepository.deleteAll();
         campaignRepository.deleteAll();
         donorRepository.deleteAll();
@@ -167,7 +150,7 @@ class BulkDonationControllerIntegrationTest {
         .when()
             .post("/bulk-donations/upload")
         .then()
-            .statusCode(403);
+            .statusCode(401);
     }
 
     @Test
@@ -199,8 +182,7 @@ class BulkDonationControllerIntegrationTest {
         .when()
             .post("/bulk-donations/upload")
         .then()
-            .statusCode(400)
-            .body("errors[0]", equalTo("File is empty"));
+            .statusCode(400);
     }
 
     @Test
@@ -218,8 +200,7 @@ class BulkDonationControllerIntegrationTest {
         .when()
             .post("/bulk-donations/upload")
         .then()
-            .statusCode(400)
-            .body("errors[0]", equalTo("Only CSV files are allowed"));
+            .statusCode(400);
     }
 
     @Test

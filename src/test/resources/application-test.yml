@@ -1,0 +1,12 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    contexts: test
+
+jwt:
+  secret: IAmATestSecretKeyForJWTs12345678901234567890
+  expiration: 86400000

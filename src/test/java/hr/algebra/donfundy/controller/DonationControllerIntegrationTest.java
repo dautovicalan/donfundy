@@ -31,19 +31,8 @@ import java.time.LocalDate;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Transactional
 @DisplayName("DonationController Integration Tests")
-@TestPropertySource(properties = {
-        "spring.datasource.username=postgres-dev",
-        "spring.datasource.password=dev",
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/donfundy",
-        "jwt.secret=TestJwtSecretKeyForDonFundyApplication"
-})
-class DonationControllerIntegrationTest {
-
-    @LocalServerPort
-    private int port;
+class DonationControllerIntegrationTest extends BaseIntegrationTest{
 
     @Autowired
     private DonationRepository donationRepository;
@@ -71,9 +60,6 @@ class DonationControllerIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        RestAssured.port = port;
-        RestAssured.basePath = "/api/v1";
-
         donationRepository.deleteAll();
         campaignRepository.deleteAll();
         donorRepository.deleteAll();

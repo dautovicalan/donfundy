@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,6 +77,16 @@ public class ExceptionAdvice {
             errors.put(fieldName, errorMessage);
         });
         return errors;
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleAuthorizationDeniedException(AuthorizationDeniedException ex, WebRequest request) {
+        log.error("Access denied: {}", ex.getMessage());
+        Locale locale = request.getLocale();
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setMessage(messageService.getLocalizedMessage("error.access.denied", locale));
+        return errorResponse;
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
