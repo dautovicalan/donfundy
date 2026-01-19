@@ -2,7 +2,6 @@ package hr.algebra.donfundy.domain;
 
 import hr.algebra.donfundy.domain.enums.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 

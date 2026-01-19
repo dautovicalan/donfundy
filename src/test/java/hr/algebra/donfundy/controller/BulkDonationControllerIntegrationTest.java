@@ -11,12 +11,10 @@ import hr.algebra.donfundy.repository.DonorRepository;
 import hr.algebra.donfundy.repository.UserRepository;
 import hr.algebra.donfundy.security.CustomUserDetailsService;
 import hr.algebra.donfundy.security.JwtUtil;
-import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.File;
@@ -26,7 +24,8 @@ import java.time.LocalDate;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 @DisplayName("BulkDonationController Integration Tests")
 class BulkDonationControllerIntegrationTest extends BaseIntegrationTest{

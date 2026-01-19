@@ -2,9 +2,9 @@ package hr.algebra.donfundy.service;
 
 import hr.algebra.donfundy.domain.User;
 import hr.algebra.donfundy.domain.enums.Role;
+import hr.algebra.donfundy.dto.RegisterRequest;
 import hr.algebra.donfundy.exception.ValidationException;
 import hr.algebra.donfundy.repository.UserRepository;
-import hr.algebra.donfundy.dto.RegisterRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
