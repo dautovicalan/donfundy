@@ -1,6 +1,18 @@
 import type { TranslationKeys } from './en-US';
 
 export const esES: TranslationKeys = {
+  home: {
+    welcome: 'Bienvenido a DonFundy',
+    tagline: 'Empoderando comunidades a través de la recaudación de fondos transparente.',
+    getStarted: 'Comenzar',
+    viewCampaigns: 'Ver Campañas',
+    feature1Title: 'Crear Campañas',
+    feature1Description: 'Configura y administra fácilmente campañas de recaudación de fondos para causas que te importan.',
+    feature2Title: 'Donaciones Seguras',
+    feature2Description: 'Acepta donaciones a través de múltiples métodos de pago seguros.',
+    feature3Title: 'Rastrear Progreso',
+    feature3Description: 'Monitorea el progreso de la campaña con actualizaciones en tiempo real e informes transparentes.',
+  },
   common: {
     loading: 'Cargando...',
     error: 'Error',
@@ -15,6 +27,7 @@ export const esES: TranslationKeys = {
   },
   nav: {
     campaigns: 'Campañas',
+    admin: 'Admin',
     login: 'Iniciar Sesión',
     register: 'Registrarse',
     logout: 'Cerrar Sesión',
@@ -118,5 +131,32 @@ export const esES: TranslationKeys = {
   },
   footer: {
     copyright: '© 2026 DonFundy. Todos los derechos reservados.',
+  },
+  admin: {
+    title: 'Panel de Administración',
+    totalCampaigns: 'Total de Campañas',
+    totalDonations: 'Total de Donaciones',
+    totalDonors: 'Total de Donantes',
+    totalRaised: 'Total Recaudado',
+    active: 'activas',
+    bulkUpload: 'Carga Masiva de Donaciones',
+    bulkUploadDescription: 'Sube un archivo CSV para importar múltiples donaciones a la vez.',
+    csvFormat: 'Formato CSV: campaignId,amount,donorEmail,donorFirstName,donorLastName,paymentMethod,message',
+    selectFile: 'Seleccionar Archivo CSV',
+    uploading: 'Subiendo...',
+    uploadComplete: 'Carga Completada',
+    totalRows: 'Total de filas',
+    successCount: 'Exitosas',
+    failureCount: 'Fallidas',
+    errors: 'Errores',
+    uploadFailed: 'Error al subir. Por favor, inténtalo de nuevo.',
+    invalidFileType: 'Por favor, selecciona un archivo CSV.',
+    recentDonations: 'Donaciones Recientes',
+    donor: 'Donante',
+    campaign: 'Campaña',
+    amount: 'Monto',
+    date: 'Fecha',
+    paymentMethod: 'Método de Pago',
+    noDonations: 'Aún no hay donaciones.',
   },
 };

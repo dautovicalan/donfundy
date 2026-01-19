@@ -13,6 +13,7 @@ import { CampaignDetailPage } from './pages/CampaignDetailPage';
 import { CreateCampaignPage } from './pages/CreateCampaignPage';
 import { EditCampaignPage } from './pages/EditCampaignPage';
 import { DonatePage } from './pages/DonatePage';
+import { AdminDashboardPage } from './pages/AdminDashboardPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -77,6 +78,15 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <CampaignDetailPage />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute>
+                    <AdminDashboardPage />
                   </ProtectedRoute>
                 }
               />

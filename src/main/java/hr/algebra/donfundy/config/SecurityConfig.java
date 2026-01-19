@@ -40,12 +40,14 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/campaigns").authenticated()
                         .requestMatchers("/campaigns/{id}").authenticated()
                         .requestMatchers("/campaigns/my-campaigns").authenticated()
                         .requestMatchers("/campaigns/{id}/donate").authenticated()
                         .requestMatchers("/campaigns/new").hasRole("ADMIN")
                         .requestMatchers("/campaigns/{id}/edit").hasRole("ADMIN")
+                        .requestMatchers("/bulk-donations/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

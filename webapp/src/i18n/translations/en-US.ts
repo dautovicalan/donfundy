@@ -1,4 +1,16 @@
 export const enUS = {
+  home: {
+    welcome: 'Welcome',
+    tagline: 'Empowering communities through transparent fundraising.',
+    getStarted: 'Get started',
+    viewCampaigns: 'View Campaigns',
+    feature1Title: 'Create Campaigns',
+    feature1Description: 'Easily set up and manage fundraising campaigns for causes you care about.',
+    feature2Title: 'Secure Donations',
+    feature2Description: 'Accept donations through multiple secure payment methods.',
+    feature3Title: 'Track Progress',
+    feature3Description: 'Monitor campaign progress with real-time updates and transparent reporting.',
+  },
   common: {
     loading: 'Loading...',
     error: 'Error',
@@ -13,6 +25,7 @@ export const enUS = {
   },
   nav: {
     campaigns: 'Campaigns',
+    admin: 'Admin',
     login: 'Login',
     register: 'Register',
     logout: 'Logout',
@@ -116,6 +129,33 @@ export const enUS = {
   },
   footer: {
     copyright: '© 2026 DonFundy. All rights reserved.',
+  },
+  admin: {
+    title: 'Admin Dashboard',
+    totalCampaigns: 'Total Campaigns',
+    totalDonations: 'Total Donations',
+    totalDonors: 'Total Donors',
+    totalRaised: 'Total Raised',
+    active: 'active',
+    bulkUpload: 'Bulk Donation Upload',
+    bulkUploadDescription: 'Upload a CSV file to import multiple donations at once.',
+    csvFormat: 'CSV format: campaignId,amount,donorEmail,donorFirstName,donorLastName,paymentMethod,message',
+    selectFile: 'Select CSV File',
+    uploading: 'Uploading...',
+    uploadComplete: 'Upload Complete',
+    totalRows: 'Total rows',
+    successCount: 'Successful',
+    failureCount: 'Failed',
+    errors: 'Errors',
+    uploadFailed: 'Upload failed. Please try again.',
+    invalidFileType: 'Please select a CSV file.',
+    recentDonations: 'Recent Donations',
+    donor: 'Donor',
+    campaign: 'Campaign',
+    amount: 'Amount',
+    date: 'Date',
+    paymentMethod: 'Payment Method',
+    noDonations: 'No donations yet.',
   },
 };
 

@@ -4,7 +4,7 @@ import { useTranslation } from '../i18n/useTranslation';
 import { LanguageToggle } from './LanguageToggle';
 
 export const Layout = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const { t } = useTranslation();
 
   return (
@@ -46,6 +46,19 @@ export const Layout = () => {
               >
                 {t.nav.campaigns}
               </Link>
+
+              {isAdmin && (
+                <Link
+                  to="/admin"
+                  style={{
+                    color: '#ffc107',
+                    textDecoration: 'none',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {t.nav.admin}
+                </Link>
+              )}
 
               <span style={{ color: '#ccc' }}>{user?.email}</span>
 

@@ -6,6 +6,12 @@ import hr.algebra.donfundy.dto.RegisterRequest;
 import hr.algebra.donfundy.security.CustomUserDetailsService;
 import hr.algebra.donfundy.security.JwtUtil;
 import hr.algebra.donfundy.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Authentication", description = "Authentication and user registration endpoints")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -28,6 +35,13 @@ public class AuthController {
     private final CustomUserDetailsService userDetailsService;
     private final UserService userService;
 
+    @Operation(summary = "User login", description = "Authenticate user and return JWT token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully authenticated",
+                    content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "401", description = "Invalid credentials"),
+            @ApiResponse(responseCode = "400", description = "Invalid request body")
+    })
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         authenticationManager.authenticate(
@@ -48,6 +62,12 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, userDetails.getUsername(), role));
     }
 
+    @Operation(summary = "User registration", description = "Register a new user and return JWT token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully registered and authenticated",
+                    content = @Content(schema = @Schema(implementation = LoginResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request or email already exists")
+    })
     @PostMapping("/register")
     public ResponseEntity<LoginResponse> register(@Valid @RequestBody RegisterRequest registerRequest) {
         userService.save(registerRequest);
@@ -58,6 +78,8 @@ public class AuthController {
         return login(loginRequest);
     }
 
+    @Operation(summary = "User logout", description = "Logout current user (client should discard token)")
+    @ApiResponse(responseCode = "200", description = "Successfully logged out")
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.ok().build();

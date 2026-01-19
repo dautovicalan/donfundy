@@ -100,3 +100,10 @@ export interface DonationResponse {
 export interface ErrorResponse {
   message: string;
 }
+
+export interface BulkDonationResult {
+  totalRows: number;
+  successCount: number;
+  failureCount: number;
+  errors: string[];
+}
