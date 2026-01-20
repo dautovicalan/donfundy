@@ -116,6 +116,7 @@ export const esES: TranslationKeys = {
     endDateInvalid: 'La fecha de finalización debe ser posterior a la fecha de inicio',
     amountRequired: 'El monto de la donación debe ser mayor que 0',
     noDonorProfile: 'Debes tener un perfil de donante para hacer donaciones',
+    passwordsDoNotMatch: 'Las contraseñas no coinciden',
   },
   errors: {
     loadingCampaigns: 'Error al cargar las campañas',

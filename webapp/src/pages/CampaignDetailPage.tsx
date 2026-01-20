@@ -25,13 +25,13 @@ export const CampaignDetailPage = () => {
       await deleteCampaign.mutateAsync(campaignId);
       navigate('/campaigns');
     } catch (err: any) {
-      setDeleteError(err.response?.data?.message || t.errors.deleteCampaignFailed);
+      setDeleteError(err.response?.data?.message || t.errors.deleteFailed);
       setShowDeleteConfirm(false);
     }
   };
 
   if (campaignLoading) {
-    return <div style={{ padding: '20px' }}>{t.campaigns.loadingCampaign}</div>;
+    return <div style={{ padding: '20px' }}>{t.common.loading}</div>;
   }
 
   if (campaignError || !campaign) {
@@ -120,10 +120,9 @@ export const CampaignDetailPage = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h2 style={{ marginTop: 0 }}>{t.campaigns.confirmDelete}</h2>
-            <p>{t.campaigns.deleteWarning}</p>
+            <h2 style={{ marginTop: 0 }}>{t.campaigns.deleteCampaign}</h2>
             <p style={{ fontWeight: 'bold', color: '#dc3545' }}>
-              {t.campaigns.campaignLabel}: {campaign.name}
+              {campaign.name}
             </p>
 
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px', flexWrap: 'wrap' }}>
@@ -142,7 +141,7 @@ export const CampaignDetailPage = () => {
                   fontWeight: 'bold',
                 }}
               >
-                {deleteCampaign.isPending ? t.campaigns.deleting : t.campaigns.yesDelete}
+                {deleteCampaign.isPending ? t.campaigns.deleting : t.common.yes}
               </button>
               <button
                 onClick={() => setShowDeleteConfirm(false)}
@@ -186,7 +185,7 @@ export const CampaignDetailPage = () => {
       <p style={{ fontSize: '18px', marginBottom: '20px' }}>{campaign.description}</p>
 
       <div style={{ backgroundColor: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
-        <h3>{t.campaigns.campaignProgress}</h3>
+        <h3>{t.campaigns.goalAmount}</h3>
 
         <div style={{ marginBottom: '10px' }}>
           <strong>{t.campaigns.goal}:</strong> ${campaign.goalAmount.toFixed(2)}
@@ -244,10 +243,10 @@ export const CampaignDetailPage = () => {
         </Link>
       )}
 
-      <h2>{t.donations.recentDonations}</h2>
+      <h2>{t.donations.title}</h2>
 
       {donationsLoading ? (
-        <div>{t.donations.loadingDonations}</div>
+        <div>{t.common.loading}</div>
       ) : donations && donations.length > 0 ? (
         <div>
           {donations.map((donation) => (

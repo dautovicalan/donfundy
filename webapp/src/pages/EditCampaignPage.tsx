@@ -50,12 +50,12 @@ export const EditCampaignPage = () => {
         setError('');
 
         if (!formData.name.trim()) {
-            setError(t.validation.campaignNameRequired);
+            setError(t.validation.nameRequired);
             return;
         }
 
         if (!formData.goalAmount || Number(formData.goalAmount) <= 0) {
-            setError(t.validation.goalAmountPositive);
+            setError(t.validation.goalRequired);
             return;
         }
 
@@ -65,7 +65,7 @@ export const EditCampaignPage = () => {
         }
 
         if (formData.endDate && formData.endDate < formData.startDate) {
-            setError(t.validation.endDateAfterStart);
+            setError(t.validation.endDateInvalid);
             return;
         }
 
@@ -84,12 +84,12 @@ export const EditCampaignPage = () => {
 
             navigate(`/campaigns/${campaignId}`);
         } catch (err: any) {
-            setError(err.response?.data?.message || t.errors.updateCampaignFailed);
+            setError(err.response?.data?.message || t.errors.updateFailed);
         }
     };
 
     if (isLoading) {
-        return <div style={{padding: '20px'}}>{t.campaigns.loadingCampaign}</div>;
+        return <div style={{padding: '20px'}}>{t.errors.loadingCampaign}</div>;
     }
 
     if (!campaign) {
@@ -107,7 +107,7 @@ export const EditCampaignPage = () => {
             <form onSubmit={handleSubmit}>
                 <div style={{marginBottom: '20px'}}>
                     <label htmlFor="name" style={{display: 'block', marginBottom: '8px', fontWeight: 'bold'}}>
-                        {t.campaigns.campaignName} *
+                        {t.campaigns.name} *
                     </label>
                     <input
                         type="text"
@@ -269,7 +269,7 @@ export const EditCampaignPage = () => {
                             cursor: updateCampaign.isPending ? 'not-allowed' : 'pointer',
                         }}
                     >
-                        {updateCampaign.isPending ? t.campaigns.updating : t.campaigns.updateCampaign}
+                        {updateCampaign.isPending ? t.campaigns.updating : t.campaigns.editCampaign}
                     </button>
 
                     <button

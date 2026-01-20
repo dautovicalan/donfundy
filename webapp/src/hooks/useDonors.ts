@@ -39,6 +39,7 @@ export const useCreateDonor = () => {
     mutationFn: (data: DonorRequest) => donorService.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['donors'] });
+      queryClient.invalidateQueries({ queryKey: ['donor'] });
     },
   });
 };
@@ -49,8 +50,10 @@ export const useUpdateDonor = () => {
   return useMutation({
     mutationFn: ({ id, data }: { id: number; data: DonorRequest }) =>
       donorService.update(id, data),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['donors'] });
+      queryClient.invalidateQueries({ queryKey: ['donor', variables.id] });
+      queryClient.invalidateQueries({ queryKey: ['donor', 'me'] });
     },
   });
 };
@@ -60,8 +63,10 @@ export const useDeleteDonor = () => {
 
   return useMutation({
     mutationFn: (id: number) => donorService.delete(id),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['donors'] });
+      queryClient.invalidateQueries({ queryKey: ['donor', id] });
+      queryClient.invalidateQueries({ queryKey: ['donations'] });
     },
   });
 };

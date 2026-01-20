@@ -39,7 +39,7 @@ export const RegisterPage = () => {
       await register(formData);
       navigate('/campaigns');
     } catch (err: any) {
-      setError(err.response?.data?.message || t.errors.registrationFailed);
+      setError(err.response?.data?.message || t.errors.registerFailed);
     } finally {
       setIsLoading(false);
     }
@@ -149,7 +149,7 @@ export const RegisterPage = () => {
       </form>
 
       <div style={{ marginTop: '20px', textAlign: 'center' }}>
-        {t.auth.haveAccount} <Link to="/login">{t.auth.loginHere}</Link>
+        {t.auth.hasAccount} <Link to="/login">{t.auth.loginHere}</Link>
       </div>
     </div>
   );

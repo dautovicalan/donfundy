@@ -34,12 +34,12 @@ export const CreateCampaignPage = () => {
 
     // Validation
     if (!formData.name.trim()) {
-      setError(t.validation.campaignNameRequired);
+      setError(t.validation.nameRequired);
       return;
     }
 
     if (!formData.goalAmount || Number(formData.goalAmount) <= 0) {
-      setError(t.validation.goalAmountPositive);
+      setError(t.validation.goalRequired);
       return;
     }
 
@@ -49,7 +49,7 @@ export const CreateCampaignPage = () => {
     }
 
     if (formData.endDate && formData.endDate < formData.startDate) {
-      setError(t.validation.endDateAfterStart);
+      setError(t.validation.endDateInvalid);
       return;
     }
 
@@ -66,7 +66,7 @@ export const CreateCampaignPage = () => {
       // Navigate to the created campaign
       navigate(`/campaigns/${result.id}`);
     } catch (err: any) {
-      setError(err.response?.data?.message || t.errors.createCampaignFailed);
+      setError(err.response?.data?.message || t.errors.createFailed);
     }
   };
 
@@ -76,12 +76,12 @@ export const CreateCampaignPage = () => {
         &larr; {t.campaigns.backToCampaigns}
       </Link>
 
-      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.campaigns.createNewCampaign}</h1>
+      <h1 style={{ fontSize: 'clamp(24px, 5vw, 32px)' }}>{t.campaigns.createCampaign}</h1>
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '20px' }}>
           <label htmlFor="name" style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>
-            {t.campaigns.campaignName} *
+            {t.campaigns.name} *
           </label>
           <input
             type="text"

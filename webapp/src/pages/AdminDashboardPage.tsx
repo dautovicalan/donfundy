@@ -52,9 +52,10 @@ export const AdminDashboardPage = () => {
     try {
       const result = await bulkDonationService.uploadCsv(file);
       setUploadResult(result);
-      // Refresh data after successful upload
+      // Refresh all data after successful upload
       queryClient.invalidateQueries({ queryKey: ['donations'] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      queryClient.invalidateQueries({ queryKey: ['donors'] });
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : t.admin.uploadFailed;
       setUploadError(errorMessage);

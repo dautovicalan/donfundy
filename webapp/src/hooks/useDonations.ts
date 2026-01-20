@@ -34,8 +34,9 @@ export const useDeleteDonation = () => {
 
   return useMutation({
     mutationFn: (id: number) => donationService.delete(id),
-    onSuccess: () => {
+    onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ['donations'] });
+      queryClient.invalidateQueries({ queryKey: ['donation', id] });
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });
     },
   });

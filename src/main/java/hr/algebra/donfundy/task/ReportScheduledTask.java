@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.TimeUnit;
+
 
 @Component
 @RequiredArgsConstructor
@@ -15,7 +17,7 @@ public class ReportScheduledTask {
     private final ExcelReportService excelReportService;
 
 
-    @Scheduled(cron = "0 0 0 * * *") // Daily at midnight
+    @Scheduled(fixedDelay = 5, timeUnit = TimeUnit.MINUTES)
     public void generateDailyCampaignReport() {
         log.info("Starting scheduled campaign report generation");
 
@@ -26,28 +28,4 @@ public class ReportScheduledTask {
             log.error("Error during scheduled report generation", e);
         }
     }
-
-    // @Scheduled(cron = "0 0 9 * * MON")
-    // public void generateWeeklyCampaignReport() {
-    //     log.info("Starting scheduled weekly campaign report generation");
-    //
-    //     try {
-    //         String reportPath = excelReportService.generateCampaignReport();
-    //         log.info("Scheduled weekly report generation completed successfully. Report saved at: {}", reportPath);
-    //     } catch (Exception e) {
-    //         log.error("Error during scheduled weekly report generation", e);
-    //     }
-    // }
-
-    // @Scheduled(cron = "0 0 0 1 * *")
-    // public void generateMonthlyCampaignReport() {
-    //     log.info("Starting scheduled monthly campaign report generation");
-    //
-    //     try {
-    //         String reportPath = excelReportService.generateCampaignReport();
-    //         log.info("Scheduled monthly report generation completed successfully. Report saved at: {}", reportPath);
-    //     } catch (Exception e) {
-    //         log.error("Error during scheduled monthly report generation", e);
-    //     }
-    // }
 }

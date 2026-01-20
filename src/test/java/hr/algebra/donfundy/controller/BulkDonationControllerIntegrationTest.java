@@ -149,7 +149,7 @@ class BulkDonationControllerIntegrationTest extends BaseIntegrationTest{
         .when()
             .post("/bulk-donations/upload")
         .then()
-            .statusCode(401);
+            .statusCode(403);
     }
 
     @Test

@@ -114,6 +114,7 @@ export const enUS = {
     endDateInvalid: 'End date must be after start date',
     amountRequired: 'Donation amount must be greater than 0',
     noDonorProfile: 'You must have a donor profile to make donations',
+    passwordsDoNotMatch: 'Passwords do not match',
   },
   errors: {
     loadingCampaigns: 'Error loading campaigns',

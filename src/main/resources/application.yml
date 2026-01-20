@@ -10,6 +10,10 @@ logging:
       %clr(:){faint} %m%n%wEx'
   level:
     root: info
+    org.hibernate: warn
+    org.hibernate.SQL: warn
+    org.hibernate.type.descriptor.sql: warn
+    org.springframework.security: warn
 
 jwt:
   secret: ${JWT_SECRET}
@@ -22,7 +26,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
   datasource:
     password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver

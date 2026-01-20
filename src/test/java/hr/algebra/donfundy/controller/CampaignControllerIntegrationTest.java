@@ -175,6 +175,7 @@ class CampaignControllerIntegrationTest extends BaseIntegrationTest{
             {
               "name": "New Campaign",
               "description": "New Description",
+              "status": "ACTIVE",
               "goalAmount": 2000.0,
               "startDate": "%s",
               "endDate": "%s"
@@ -198,6 +199,7 @@ class CampaignControllerIntegrationTest extends BaseIntegrationTest{
             {
               "name": "Updated Campaign",
               "description": "Updated Description",
+              "status": "ACTIVE",
               "goalAmount": 1500.0,
               "startDate": "%s",
               "endDate": "%s"
@@ -223,6 +225,7 @@ class CampaignControllerIntegrationTest extends BaseIntegrationTest{
             {
               "name": "Updated Campaign",
               "description": "Updated Description",
+              "status": "ACTIVE",
               "goalAmount": 1500.0,
               "startDate": "%s",
               "endDate": "%s"
