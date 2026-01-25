@@ -6,15 +6,4 @@ public class BusinessException extends LocalizedException {
         super(messageCode);
     }
 
-    public BusinessException(String messageCode, Object[] messageArgs) {
-        super(messageCode, messageArgs);
-    }
-
-    public BusinessException(String messageCode, Throwable cause) {
-        super(messageCode, cause);
-    }
-
-    public BusinessException(String messageCode, Object[] messageArgs, Throwable cause) {
-        super(messageCode, messageArgs, cause);
-    }
 }

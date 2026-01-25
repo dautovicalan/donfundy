@@ -6,7 +6,4 @@ public class ValidationException extends LocalizedException {
         super(messageCode);
     }
 
-    public ValidationException(String messageCode, Object[] messageArgs) {
-        super(messageCode, messageArgs);
-    }
 }

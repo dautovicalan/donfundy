@@ -9,7 +9,7 @@ public abstract class LocalizedException extends RuntimeException {
     private final Object[] messageArgs;
 
     protected LocalizedException(String messageCode) {
-        this(messageCode, (Object[]) null);
+        this(messageCode, null);
     }
 
     protected LocalizedException(String messageCode, Object[] messageArgs) {
@@ -18,13 +18,4 @@ public abstract class LocalizedException extends RuntimeException {
         this.messageArgs = messageArgs;
     }
 
-    protected LocalizedException(String messageCode, Throwable cause) {
-        this(messageCode, null, cause);
-    }
-
-    protected LocalizedException(String messageCode, Object[] messageArgs, Throwable cause) {
-        super(messageCode, cause);
-        this.messageCode = messageCode;
-        this.messageArgs = messageArgs;
-    }
 }
