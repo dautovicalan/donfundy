@@ -63,7 +63,6 @@ export const CreateCampaignPage = () => {
         status: formData.status,
       });
 
-      // Navigate to the created campaign
       navigate(`/campaigns/${result.id}`);
     } catch (err: any) {
       setError(err.response?.data?.message || t.errors.createFailed);
