@@ -80,16 +80,6 @@ public class ExceptionAdvice {
         return errors;
     }
 
-    @ExceptionHandler(AuthorizationDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handleAuthorizationDeniedException(AuthorizationDeniedException ex, WebRequest request) {
-        log.error("Access denied: {}", ex.getMessage());
-        Locale locale = request.getLocale();
-        ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setMessage(messageService.getLocalizedMessage("error.access.denied", locale));
-        return errorResponse;
-    }
-
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
