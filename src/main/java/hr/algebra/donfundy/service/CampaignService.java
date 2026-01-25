@@ -138,6 +138,7 @@ public class CampaignService {
 
     private Donor getCurrentDonor() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        assert authentication != null;
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException("error.user.not.found"));
